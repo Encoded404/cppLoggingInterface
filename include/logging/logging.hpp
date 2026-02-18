@@ -94,8 +94,16 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
 #define LOGIFACE_MIN_LEVEL trace
 #endif
 
-// Logging macro (populates `location` with the file path)
-#define LOGIFACE_LOG(lvl, msg_expr)                                             \
+// Allow choosing the project default at build-time: 0 = file, 1 = function
+#ifndef LOGIFACE_DEFAULT_TO_FUNCTION
+#define LOGIFACE_DEFAULT_TO_FUNCTION 0
+#endif
+
+// FORCE variants always pick a specific location source. The public
+// `LOGIFACE_LOG` macro below will be mapped to one of these according to
+// `LOGIFACE_DEFAULT_TO_FUNCTION` (and remains overrideable at call sites by
+// using the FORCE macros directly).
+#define LOGIFACE_FORCE_LOG_FILE(lvl, msg_expr)                                   \
     do {                                                                         \
         if (static_cast<int>(Logiface::Level::lvl) <                              \
             static_cast<int>(Logiface::Level::LOGIFACE_MIN_LEVEL))               \
@@ -112,8 +120,7 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
             std::chrono::system_clock::now()});                                  \
     } while (0)
 
-// Alternate logging macro that records the function name as the location
-#define LOGIFACE_LOG_FN(lvl, msg_expr)                                          \
+#define LOGIFACE_FORCE_LOG_FUNCTION(lvl, msg_expr)                               \
     do {                                                                         \
         if (static_cast<int>(Logiface::Level::lvl) <                              \
             static_cast<int>(Logiface::Level::LOGIFACE_MIN_LEVEL))               \
@@ -129,6 +136,14 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
             __LINE__,                                                            \
             std::chrono::system_clock::now()});                                  \
     } while (0)
+
+// Public mapping: `LOGIFACE_LOG` follows the project default but callers can
+// still explicitly use the FORCE variants when needed.
+#if LOGIFACE_DEFAULT_TO_FUNCTION
+#define LOGIFACE_LOG(lvl, msg_expr) LOGIFACE_FORCE_LOG_FUNCTION(lvl, msg_expr)
+#else
+#define LOGIFACE_LOG(lvl, msg_expr) LOGIFACE_FORCE_LOG_FILE(lvl, msg_expr)
+#endif
 
 #else
 // Logging disabled
