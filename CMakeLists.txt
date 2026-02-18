@@ -10,4 +10,4 @@ target_include_directories(logiface INTERFACE
 )
 # Share the top-level project root so each consumer can trim __FILE__ to a
 # workspace-relative path before storing it into the log record.
-target_compile_definitions(logiface INTERFACE LOGIFACE_PROJECT_ROOT="\"${CMAKE_SOURCE_DIR}/\"")
+target_compile_definitions(logiface INTERFACE LOGIFACE_PROJECT_ROOT="${CMAKE_SOURCE_DIR}/")
