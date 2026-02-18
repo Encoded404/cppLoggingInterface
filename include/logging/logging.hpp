@@ -60,8 +60,9 @@ inline const char* ToString(Level l) noexcept {
 struct Record {
     Level lvl;
     std::string message;  // own the string
-    std::string_view file;
-    const char* function;
+    // `location` holds either a file path or a function name, depending on
+    // which logging macro populated it.
+    std::string_view location;
     int line;
     std::chrono::system_clock::time_point timestamp;
 };
@@ -93,7 +94,7 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
 #define LOGIFACE_MIN_LEVEL trace
 #endif
 
-// Logging macro
+// Logging macro (populates `location` with the file path)
 #define LOGIFACE_LOG(lvl, msg_expr)                                             \
     do {                                                                         \
         if (static_cast<int>(Logiface::Level::lvl) <                              \
@@ -107,7 +108,24 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
             Logiface::Level::lvl,                                               \
             (msg_expr), /* must produce std::string */                           \
             Logiface::StripProjectRoot(__FILE__),                                \
-            __func__,                                                            \
+            __LINE__,                                                            \
+            std::chrono::system_clock::now()});                                  \
+    } while (0)
+
+// Alternate logging macro that records the function name as the location
+#define LOGIFACE_LOG_FN(lvl, msg_expr)                                          \
+    do {                                                                         \
+        if (static_cast<int>(Logiface::Level::lvl) <                              \
+            static_cast<int>(Logiface::Level::LOGIFACE_MIN_LEVEL))               \
+            break;                                                               \
+        auto lg = Logiface::GetLogger();                                         \
+        if (!lg) break;                                                          \
+        if (static_cast<int>(Logiface::Level::lvl) < static_cast<int>(lg->GetLevel())) \
+            break;                                                               \
+        lg->Log(Logiface::Record{                                               \
+            Logiface::Level::lvl,                                               \
+            (msg_expr), /* must produce std::string */                           \
+            std::string_view(__func__),                                          \
             __LINE__,                                                            \
             std::chrono::system_clock::now()});                                  \
     } while (0)

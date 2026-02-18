@@ -24,9 +24,9 @@ namespace Logiface
                     ? err_
                     : out_;
             auto tt = std::chrono::system_clock::to_time_t(r.timestamp);
-            os << "[" << std::put_time(std::localtime(&tt), "%F %T") << "] "
+                os << "[" << std::put_time(std::localtime(&tt), "%F %T") << "] "
                     << ToString(r.lvl) << " "
-                    << "(" << r.function << ":" << r.line << "): "
+                    << "(" << r.location << ":" << r.line << "): "
                     << r.message << '\n';
         }
         void SetLevel(Level lvl) noexcept override { lvl_ = lvl; }
