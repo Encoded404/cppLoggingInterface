@@ -30,7 +30,7 @@ namespace Logiface
                     << r.message << '\n';
         }
         void SetLevel(Level lvl) noexcept override { lvl_ = lvl; }
-        Level GetLevel() const noexcept override { return lvl_; }
+        [[nodiscard]] Level GetLevel() const noexcept override { return lvl_; }
     private:
         Level lvl_;
         std::ostream& out_;
