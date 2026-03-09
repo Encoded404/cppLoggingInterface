@@ -24,7 +24,7 @@ inline constexpr std::string_view StripProjectRoot(std::string_view file) noexce
     if (ProjectRoot.empty() || file.size() < ProjectRoot.size()) {
         return file;
     }
-    if (file.substr(0, ProjectRoot.size()) == ProjectRoot) {
+    if (file.starts_with(ProjectRoot)) {
         file.remove_prefix(ProjectRoot.size());
         if (!file.empty() && (file.front() == '/' || file.front() == '\\')) {
             file.remove_prefix(1);
@@ -72,7 +72,7 @@ struct Logger {
     virtual ~Logger() = default;
     virtual void Log(const Record& r) = 0;
     virtual void SetLevel(Level lvl) noexcept = 0;
-    virtual Level GetLevel() const noexcept = 0;
+    [[nodiscard]] virtual Level GetLevel() const noexcept = 0;
 };
 
 // Global logger storage
