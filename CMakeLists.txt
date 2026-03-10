@@ -8,6 +8,9 @@ target_include_directories(logiface INTERFACE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
+
+add_library(logiface::logiface ALIAS logiface)
+
 # Share the top-level project root so each consumer can trim __FILE__ to a
 # workspace-relative path before storing it into the log record.
 target_compile_definitions(logiface INTERFACE LOGIFACE_PROJECT_ROOT="${CMAKE_SOURCE_DIR}/")
