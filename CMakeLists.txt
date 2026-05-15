@@ -13,4 +13,10 @@ add_library(logiface::logiface ALIAS logiface)
 
 # Share the top-level project root so each consumer can trim __FILE__ to a
 # workspace-relative path before storing it into the log record.
-target_compile_definitions(logiface INTERFACE LOGIFACE_PROJECT_ROOT="${CMAKE_SOURCE_DIR}/")
+target_compile_definitions(logiface INTERFACE
+    LOGIFACE_PROJECT_ROOT="${CMAKE_SOURCE_DIR}/"
+    $<$<CONFIG:Debug>:LOGIFACE_MIN_LEVEL=trace>
+    $<$<CONFIG:RelWithDebInfo>:LOGIFACE_MIN_LEVEL=debug>
+    $<$<CONFIG:Release>:LOGIFACE_MIN_LEVEL=info>
+    $<$<CONFIG:MinSizeRel>:LOGIFACE_MIN_LEVEL=info>
+)
