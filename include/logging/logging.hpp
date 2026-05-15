@@ -99,6 +99,16 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
 #define LOGIFACE_DEFAULT_TO_FUNCTION 0
 #endif
 
+// Choose the best available function-name builtin.
+// - Clang's __builtin_FUNCTION() returns the enclosing function name even
+//   inside lambdas (unlike __func__ which gives "operator()").
+// - On other compilers, fall back to __PRETTY_FUNCTION__.
+#ifdef __clang__
+#define LOGIFACE_CURRENT_FUNCTION __builtin_FUNCTION()
+#else
+#define LOGIFACE_CURRENT_FUNCTION __PRETTY_FUNCTION__
+#endif
+
 // FORCE variants always pick a specific location source. The public
 // `LOGIFACE_LOG` macro below will be mapped to one of these according to
 // `LOGIFACE_DEFAULT_TO_FUNCTION` (and remains overrideable at call sites by
@@ -132,7 +142,7 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
         lg->Log(Logiface::Record{                                               \
             Logiface::Level::lvl,                                               \
             (msg_expr), /* must produce std::string */                           \
-            std::string_view(__PRETTY_FUNCTION__),                                          \
+            std::string_view(LOGIFACE_CURRENT_FUNCTION),                                          \
             __LINE__,                                                            \
             std::chrono::system_clock::now()});                                  \
     } while (0)
