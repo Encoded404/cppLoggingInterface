@@ -132,7 +132,7 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
         lg->Log(Logiface::Record{                                               \
             Logiface::Level::lvl,                                               \
             (msg_expr), /* must produce std::string */                           \
-            std::string_view(__func__),                                          \
+            std::string_view(__PRETTY_FUNCTION__),                                          \
             __LINE__,                                                            \
             std::chrono::system_clock::now()});                                  \
     } while (0)
