@@ -120,19 +120,7 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
             std::chrono::system_clock::now()});                                  \
     } while (0)
 
-#ifdef __clang__
-#define LOGIFACE_DIAG_PUSH _Pragma("clang diagnostic push")
-#define LOGIFACE_DIAG_POP _Pragma("clang diagnostic pop")
-#define LOGIFACE_DIAG_IGNORE_LAMBDA_FUNCNAME _Pragma("clang diagnostic ignored \"-Wbugprone-lambda-function-name\"")
-#else
-#define LOGIFACE_DIAG_PUSH
-#define LOGIFACE_DIAG_POP
-#define LOGIFACE_DIAG_IGNORE_LAMBDA_FUNCNAME
-#endif
-
 #define LOGIFACE_FORCE_LOG_FUNCTION(lvl, msg_expr)                               \
-    LOGIFACE_DIAG_PUSH                                                           \
-    LOGIFACE_DIAG_IGNORE_LAMBDA_FUNCNAME                                         \
     do {                                                                         \
         if (static_cast<int>(Logiface::Level::lvl) <                              \
             static_cast<int>(Logiface::Level::LOGIFACE_MIN_LEVEL))               \
@@ -147,8 +135,7 @@ inline std::shared_ptr<Logger> GetLogger() noexcept {
             std::string_view(__func__),                                          \
             __LINE__,                                                            \
             std::chrono::system_clock::now()});                                  \
-    } while (0)                                                                    \
-    LOGIFACE_DIAG_POP
+    } while (0)
 
 // Public mapping: `LOGIFACE_LOG` follows the project default but callers can
 // still explicitly use the FORCE variants when needed.
