@@ -54,3 +54,10 @@ if(LOGIFACE_USE_STD_MODULE)
     # include directories and compile definitions (e.g. LOGIFACE_PROJECT_ROOT).
     target_link_libraries(logiface_module PUBLIC logiface)
 endif()
+
+# When the module OBJECT library exists, make the INTERFACE target pull it in
+# so any consumer that does `target_link_libraries(... logiface::logiface)`
+# automatically gets the `logiface` module compiled and available for import.
+if(TARGET logiface_module)
+    target_link_libraries(logiface INTERFACE logiface_module)
+endif()
