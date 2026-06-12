@@ -1,19 +1,10 @@
-#ifndef LOGGING_LOGGING_HPP
-#define LOGGING_LOGGING_HPP
+module;
 
-#include <chrono>
-#include <string>
-#include <string_view>
+export module logiface;
 
-#ifndef LOGIFACE_ENABLE_LOGGING
-#define LOGIFACE_ENABLE_LOGGING 1
-#endif
+import std;
 
-#ifndef LOGIFACE_PROJECT_ROOT
-#define LOGIFACE_PROJECT_ROOT ""
-#endif
-
-namespace Logiface {
+export namespace Logiface {
 
 inline constexpr std::string_view ProjectRoot{LOGIFACE_PROJECT_ROOT};
 
@@ -56,9 +47,7 @@ inline const char* ToString(Level l) noexcept {
 // Log record
 struct Record {
     Level lvl;
-    std::string message;  // own the string
-    // `location` holds either a file path or a function name, depending on
-    // which logging macro populated it.
+    std::string message;
     std::string_view location;
     int line;
     std::chrono::system_clock::time_point timestamp;
@@ -72,7 +61,7 @@ struct Logger {
     [[nodiscard]] virtual Level GetLevel() const noexcept = 0;
 };
 
-// Global logger storage
+// Global logger storage and accessors (raw pointer, no shared_ptr)
 namespace Detail {
     inline Logger* g_logger{nullptr};
 }
@@ -85,12 +74,4 @@ inline Logger* GetLogger() noexcept {
     return Detail::g_logger;
 }
 
-// ------------------------------------------------------------------
-// Logging macros — moved to a separate zero-include header that is
-// safe for the Global Module Fragment alongside `import std;`.
-// ------------------------------------------------------------------
-#include "logging_macros.hpp"
-
 } // namespace Logiface
-
-#endif // LOGGING_LOGGING_HPP
