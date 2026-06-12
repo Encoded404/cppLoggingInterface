@@ -37,7 +37,7 @@ if(LOGIFACE_USE_STD_MODULE)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_MODULE_STD ON)
 
-    add_library(logiface_module OBJECT)
+    add_library(logiface_module STATIC)
 
     target_sources(logiface_module PUBLIC
         FILE_SET CXX_MODULES
