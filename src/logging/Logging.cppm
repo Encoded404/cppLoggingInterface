@@ -1,8 +1,16 @@
 module;
 
+#ifndef LOGIFACE_USE_STD_MODULE
+#include <string_view>
+#include <string>
+#include <chrono>
+#endif
+
 export module logiface;
 
+#ifdef LOGIFACE_USE_STD_MODULE
 import std;
+#endif
 
 export namespace Logiface {
 

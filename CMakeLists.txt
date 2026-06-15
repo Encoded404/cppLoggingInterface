@@ -10,7 +10,8 @@ endif ()
 
 project(cppLoggingInterface LANGUAGES CXX)
 
-option(LOGIFACE_USE_STD_MODULE "Use import std; instead of #include in the logging module" OFF)
+option(LOGIFACE_USE_STD_MODULE "Use import std; instead of #include headers in the logging module" OFF)
+option(LOGIFACE_BUILD_MODULE "Build the logging module for import logiface; support" OFF)
 
 # Traditional header-only INTERFACE library (always available).
 add_library(logiface INTERFACE)
@@ -32,7 +33,7 @@ target_compile_definitions(logiface INTERFACE
     $<$<CONFIG:MinSizeRel>:LOGIFACE_MIN_LEVEL=info>
 )
 
-if(LOGIFACE_USE_STD_MODULE)
+if(LOGIFACE_BUILD_MODULE)
     set(CMAKE_CXX_STANDARD 23)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_MODULE_STD ON)
@@ -49,6 +50,13 @@ if(LOGIFACE_USE_STD_MODULE)
 
     target_compile_features(logiface_module PUBLIC cxx_std_23)
     set_target_properties(logiface_module PROPERTIES CXX_MODULE_STD ON)
+
+    # Pass LOGIFACE_USE_STD_MODULE to the module sources so they can
+    # decide whether to `import std;` or use `#include` headers.
+    target_compile_definitions(logiface_module
+        PUBLIC
+            $<$<BOOL:${LOGIFACE_USE_STD_MODULE}>:LOGIFACE_USE_STD_MODULE=1>
+    )
 
     # Depend on the traditional INTERFACE target to pick up
     # include directories and compile definitions (e.g. LOGIFACE_PROJECT_ROOT).

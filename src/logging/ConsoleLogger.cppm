@@ -1,8 +1,20 @@
 module;
 
+#ifndef LOGIFACE_USE_STD_MODULE
+#include <mutex>
+#include <iostream>
+#include <chrono>
+#include <iomanip>
+#include <ctime>
+#include <string_view>
+#include <string>
+#endif
+
 export module logiface.ConsoleLogger;
 
+#ifdef LOGIFACE_USE_STD_MODULE
 import std;
+#endif
 import logiface;
 
 export namespace Logiface {
