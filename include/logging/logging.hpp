@@ -13,6 +13,14 @@
 #define LOGIFACE_PROJECT_ROOT ""
 #endif
 
+#if __cplusplus >= 202002L
+    #define STARTS_WITH(str, prefix) (std::string_view(str).starts_with(prefix))
+#else
+    #define STARTS_WITH(str, prefix) \
+    (std::string_view(str).size() >= std::string_view(prefix).size() && \
+    std::string_view(str).compare(0, std::string_view(prefix).size(), prefix) == 0)
+#endif
+
 namespace Logiface {
 
 inline constexpr std::string_view ProjectRoot{LOGIFACE_PROJECT_ROOT};
@@ -21,7 +29,7 @@ inline constexpr std::string_view StripProjectRoot(std::string_view file) noexce
     if (ProjectRoot.empty() || file.size() < ProjectRoot.size()) {
         return file;
     }
-    if (file.starts_with(ProjectRoot)) {
+    if (STARTS_WITH(file, ProjectRoot)) {
         file.remove_prefix(ProjectRoot.size());
         if (!file.empty() && (file.front() == '/' || file.front() == '\\')) {
             file.remove_prefix(1);
