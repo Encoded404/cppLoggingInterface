@@ -13,6 +13,15 @@ project(cppLoggingInterface LANGUAGES CXX)
 option(LOGIFACE_USE_STD_MODULE "Use import std; instead of #include headers in the logging module" OFF)
 option(LOGIFACE_BUILD_MODULE "Build the logging module for import logiface; support" OFF)
 
+# C++ standard the logiface module is compiled with. Consumers must build the
+# module at the same dialect they import it from (GCC .gcm files are
+# dialect-strict), so consuming projects may set this before add_subdirectory()
+# or via -DLOGIFACE_CXX_STANDARD=<n>. Defaults to 23 for backwards
+# compatibility with existing consumers.
+set(LOGIFACE_CXX_STANDARD 23 CACHE STRING
+    "C++ standard for the logiface module; must match the consuming project's dialect")
+set_property(CACHE LOGIFACE_CXX_STANDARD PROPERTY STRINGS 20 23 26)
+
 # Traditional header-only INTERFACE library (always available).
 add_library(logiface INTERFACE)
 target_compile_features(logiface INTERFACE cxx_std_20)
@@ -34,7 +43,7 @@ target_compile_definitions(logiface INTERFACE
 )
 
 if(LOGIFACE_BUILD_MODULE)
-    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD ${LOGIFACE_CXX_STANDARD})
     set(CMAKE_CXX_STANDARD_REQUIRED ON)
     set(CMAKE_CXX_MODULE_STD ON)
 
@@ -48,7 +57,7 @@ if(LOGIFACE_BUILD_MODULE)
             ${CMAKE_CURRENT_SOURCE_DIR}/src/logging/ConsoleLogger.cppm
     )
 
-    target_compile_features(logiface_module PUBLIC cxx_std_23)
+    target_compile_features(logiface_module PUBLIC cxx_std_${LOGIFACE_CXX_STANDARD})
     set_target_properties(logiface_module PROPERTIES CXX_MODULE_STD ON)
 
     # Pass LOGIFACE_USE_STD_MODULE to the module sources so they can
